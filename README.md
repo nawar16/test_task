@@ -3,9 +3,8 @@
 
 
 ## Credentials
-    email: **me@test.com** 
-    password: **me123**
+    email: me@test.com
+    password: me123
 
 
-------------
 

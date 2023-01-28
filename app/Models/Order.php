@@ -20,6 +20,12 @@ class Order extends Model
         'updated_at'
     ];
 
+    public static function boot() {
+        parent::boot();
+        static::deleting(function($order) { 
+             $order->order_items()->delete();
+        });
+    }
     public function customer(){
         return $this->belongsTo(Customer::class , "customer_id");
     }

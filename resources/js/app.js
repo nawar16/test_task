@@ -32,4 +32,9 @@ app.use(PrimeVue);
 app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.mount('#app');
-
+app.directive('sortable', {
+    inserted: function (el, binding) {
+      Sortable.create(el, binding.value || {}) 
+    }
+})
+  

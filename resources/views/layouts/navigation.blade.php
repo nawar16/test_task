@@ -20,7 +20,11 @@
                         {{ __('Products') }}
                     </router-link>
                     </x-nav-link>
-
+                    <x-nav-link  :active="request()->routeIs('any')">
+                    <router-link :to="{ name: 'orders.index' }" >
+                        {{ __('Orders') }}
+                    </router-link>
+                    </x-nav-link>
                 
                 </div>
             </div>
