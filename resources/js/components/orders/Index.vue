@@ -25,7 +25,7 @@
        </Column>
        <Column field="order_number" header="Num" :sortable="true">
        </Column>
-       <Column field="customer_id" header="Customer" :sortable="true"></Column>
+       <Column field="customer.first_name" header="Customer" :sortable="true"></Column>
        <Column field="total_amount" header="Total amount" :sortable="true"></Column>
        <Column header="actions">
             <template #body="slotProps">

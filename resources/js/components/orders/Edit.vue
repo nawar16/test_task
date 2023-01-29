@@ -2,57 +2,92 @@
  <template>
      <div>
 
-     <h3 class="text-2xl mb-4">Edit product</h3>
+     <h3 class="text-2xl mb-4">Edit order</h3>
 
-    <form class="space-y-6" @submit.prevent="editProduct">
+    <form class="space-y-6" @submit.prevent="editOrder">
         <div class="space-y-4 rounded-md shadow-sm">
             <div>
-                <label for="product_name" class="block text-sm font-medium text-gray-700">Name</label>
+                <label for="order_date" class="block text-sm font-medium text-gray-700">Order date</label>
                 <div class="mt-1">
-                    <input type="text" name="product_name" id="product_name"
+                    <input type="date" name="order_date" id="order_date"
                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                           v-model="product.product_name">
+                           v-model="order.order_date">
                 </div>
                 <div
                   class="font-medium ml-3 text-red-700"
-                  v-if="errors && errors.product_name"
+                  v-if="errors && errors.order_date"
                 >
-                {{errors.product_name[0]}}
+                {{errors.order_date[0]}}
                 </div>
             </div>
-
             <div>
-                <label for="unit_price" class="block text-sm font-medium text-gray-700">Price</label>
+                <label for="customer_id" class="block text-sm font-medium text-gray-700">Customer</label>
                 <div class="mt-1">
-                    <input type="text" name="unit_price" id="unit_price"
-                           class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                           v-model="product.unit_price">
-                </div>
-
-                <div
-                  class="font-medium ml-3 text-red-700"
-                  v-if="errors && errors.unit_price"
-                >
-                {{errors.unit_price[0]}}
-                </div>
-            </div>
-
-            <div>
-                <label for="supplier_id" class="block text-sm font-medium text-gray-700">Supplier</label>
-                <div class="mt-1">
-                    <select name="supplier_id" id="supplier_id"
+                    <select name="customer_id" id="customer_id"
                             class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                            v-model="product.supplier_id" >
-                        <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.company_name }}</option>
+                            v-model="order.customer_id" >
+                        <option v-for="customer in customers" :value="customer.id">{{ customer.first_name }} {{ customer.last_name }}</option>
                     </select>
                 </div>
                 <div
                   class="font-medium ml-3 text-red-700"
-                  v-if="errors && errors.supplier_id"
+                  v-if="errors && errors.customer_id"
                 >
-                {{errors.supplier_id[0]}}
+                {{errors.customer_id[0]}}
                 </div>
             </div>
+            <div>
+                <label for="items" class="block text-sm font-medium text-gray-700" @click="addItem()"><i class="fa fa-add"></i> Add Order Item</label>
+                <div class="mt-1">
+                
+                <ul ref="list" class="list" v-sortable="{animation: 250, onUpdate: work}">
+                    <li v-for="(item, index) in order.order_items" :_id="item.id" :order="item.order" :key="item.id" >
+                        <div class="grid grid-cols-3 gap-3">
+                            <div ><input v-model="item.quantity" placeholder="Enter quantity" type="number" @change="setQ($event, item.id)"/></div>
+                            <div >
+                            <select
+                            v-model="item.product_id"
+                            @change="setP($event, item.id)"
+                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            >
+                            <option value="">Choose Product</option>
+                            <option v-for="product in products" :value="product.id">{{ product.product_name }}</option>
+                            </select>
+                            </div>
+                         
+                        </div>
+                    </li>
+                    <li v-for="(item, index) in orderedItems" :_id="item.id" :order="item.order" :key="item.id" >
+                        <div class="grid grid-cols-3 gap-3">
+                            <div ><input v-model="item.quantity" placeholder="Enter quantity" type="number" @change="setQ($event, item.id)"/></div>
+                            <div >
+                            <select
+                            v-model="item.product_id"
+                            @change="setP($event, item.id)"
+                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            >
+                            <option value="">Choose Product</option>
+                            <option v-for="product in products" :value="product.id">{{ product.product_name }}</option>
+                            </select>
+                            </div>
+                            <div >
+                                <button @click="deleteItem(index)"><i class="fa fa-trash">  </i></button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <div
+                  class="font-medium ml-3 text-red-700"
+                  v-if="errors && errors.orderedItems"
+                >
+                {{errors.orderedItems[0]}}
+                </div>
+            </div>
+            </div>
+
+      
+         
 
         </div>
 
@@ -68,8 +103,10 @@
  <script>
 
  import { onMounted } from 'vue'
- import useProducts from '../../composables/products'
+ import useOrders from '../../composables/orders'
  import useSuppliers from '../../composables/suppliers'
+ import useCustomers from '../../composables/customers'
+ import useProducts from '../../composables/products'
 
  export default {
 
@@ -79,24 +116,63 @@
             type: String
         }
     },
-
+    data() {
+        return {
+            items: [],
+            orderedItems: [{id: 0, product_id: '', quantity: ''  }],
+        }
+    },
+    created: function()
+    {
+        this.orderedItems = _.orderBy(this.items, 'order')
+    },
+    methods: {
+        work: function(event)
+        {
+            const { oldIndex, newIndex } = event
+            const movedItem = this.orderedItems.splice(oldIndex, 1)
+            this.orderedItems.splice(newIndex, 0, ...movedItem)
+        },
+        deleteItem(index) {
+            this.orderedItems.splice(index, 1)
+        },
+        addItem(){
+            let newI = this.orderedItems.length
+            this.orderedItems.push({id: newI, product_id: '', quantity: ''})
+        },
+        setQ($event, item_id) {
+            this.orderedItems[item_id].quantity = $event.target.value
+            this.order.items = this.orderedItems
+        },
+        setP($event, item_id) {
+            this.orderedItems[item_id].product_id = $event.target.value
+            this.order.items = this.orderedItems
+        }
+    },
      setup(props) {
 
-        const { errors, getProduct, product, updateProduct } = useProducts()
+        const { errors, getOrder, order, updateOrder } = useOrders()
         const { suppliers, getSuppliers } = useSuppliers()
-        onMounted(() => getProduct(props.id))
+        const { customers, getCustomers } = useCustomers()
+        const { products, getProducts } = useProducts()
+        onMounted(() => getOrder(props.id))
         onMounted(getSuppliers);
+        onMounted(getCustomers);
+        onMounted(getProducts);
 
-        const editProduct = async () => {
-               await updateProduct(props.id)
+
+        const editOrder = async () => {
+               await updateOrder(props.id)
                await getSuppliers()
         }
 
         return {
-            product,
+            order,
+            customers,
+            products,
             suppliers,
             errors,
-            editProduct
+            editOrder
         }
      }
  }

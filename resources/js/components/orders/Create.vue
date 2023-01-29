@@ -7,7 +7,7 @@
     <form class="space-y-6" @submit.prevent="saveOrder" method="POST">
         <div class="space-y-4 rounded-md shadow-sm">
             <div>
-                <label for="order_date" class="block text-sm font-medium text-gray-700">Name</label>
+                <label for="order_date" class="block text-sm font-medium text-gray-700">Order date</label>
                 <div class="mt-1">
                     <input type="date" name="order_date" id="order_date"
                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -60,9 +60,6 @@
                                 <button @click="deleteItem(index)"><i class="fa fa-trash">  </i></button>
                             </div>
                         </div>
-                        
-
-                     
                     </li>
                 </ul>
                 <div
@@ -88,15 +85,11 @@
  </div>
  </template>
  <script>
-import { onMounted } from 'vue';
+ import { onMounted } from 'vue';
  import { reactive } from 'vue'
  import useOrders from '../../composables/orders'
  import useCustomers from '../../composables/customers'
  import useProducts from '../../composables/products'
-
-
-  
-
 
 
 
