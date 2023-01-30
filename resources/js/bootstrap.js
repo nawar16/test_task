@@ -12,6 +12,15 @@ window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+window.axios.interceptors.response.use(function (response) {
+    return response
+  }, function (error) {
+    console.log(error.response.data)
+    if (error.response.status === 404) {
+      router.push('page_not_found')
+    }
+    return Promise.reject(error)
+  })
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

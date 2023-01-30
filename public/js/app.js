@@ -26524,6 +26524,17 @@ window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.interceptors.response.use(function (response) {
+  return response;
+}, function (error) {
+  console.log(error.response.data);
+
+  if (error.response.status === 404) {
+    router.push('page_not_found');
+  }
+
+  return Promise.reject(error);
+});
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
@@ -27310,6 +27321,7 @@ var routes = [{
   props: true
 }, {
   path: '/:pathMatch(.*)*',
+  name: 'page_not_found',
   component: _components_page_not_found_vue__WEBPACK_IMPORTED_MODULE_7__["default"]
 }];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,vue_router__WEBPACK_IMPORTED_MODULE_8__.createRouter)({
