@@ -17,6 +17,8 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        \Artisan::call('config:clear');
+
         return $app;
     }
 }

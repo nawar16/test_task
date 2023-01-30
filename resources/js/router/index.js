@@ -8,6 +8,7 @@ import ProductsEdit from '../components/products/Edit.vue'
 import OrdersIndex from '../components/orders/Index.vue'
 import OrdersCreate from '../components/orders/Create.vue'
 import OrdersEdit from '../components/orders/Edit.vue'
+import PageNotFound from '../components/page_not_found.vue'
 
 
 const routes = [
@@ -49,6 +50,10 @@ const routes = [
         name: 'orders.edit',
         component: OrdersEdit,
         props: true
+    },
+    { 
+        path: '/:pathMatch(.*)*', 
+        component: PageNotFound 
     }
 ]
 

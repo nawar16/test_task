@@ -2,43 +2,43 @@
 
 namespace App\Http\Controllers\API;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\ProductService;
+
 
 class ProductController extends Controller
 {
+    protected $product_service;
+    
+    public function __construct(ProductService $product_service)
+    {
+        $this->product_service = $product_service;
+    }
     public function index()
     {
-        return ProductResource::collection(Product::with(['supplier'])->get());
+        return $this->product_service->index();
     }
 
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->validated());
-
-        return new ProductResource($product);
+        return $this->product_service->store($request);
     }
 
     public function show(Product $product)
     {
-        return new ProductResource($product);
+        return $this->product_service->show($product);
     }
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product->update($request->validated());
-
-        return new ProductResource($product);
+        return $this->product_service->update($request, $product);
     }
 
     public function destroy(Product $product)
     {
-        $product->delete();
-
-        return response()->noContent();
+        return $this->product_service->destroy($product);
     }
 }

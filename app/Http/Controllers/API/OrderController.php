@@ -2,100 +2,42 @@
 
 namespace App\Http\Controllers\API;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
-use App\Http\Resources\OrderResource;
+use App\Services\OrderService;
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
 
 class OrderController extends Controller
 {
+    protected $order_service;
+    
+    public function __construct(OrderService $order_service)
+    {
+        $this->order_service = $order_service;
+    }
     public function index()
     {
-        return OrderResource::collection(Order::with(['customer'])->get());
+        return $this->order_service->index();
     }
 
     public function store(StoreOrderRequest $request)
     {
-        $product_prices = collect($request->items)->map(function ($single_item) {
-            $product = Product::find($single_item['product_id']);
-            return ['price'=>$product->unit_price*$single_item['quantity']];
-        });
-        $order = Order::create([
-            'order_date' => $request->order_date,
-            'customer_id' => $request->customer_id,
-            'order_number' => \Str::random(10),
-            'total_amount' => $product_prices->sum('price')
-        ]);
-        $items = collect($request->items)->map(function ($item) use($order){
-            $product = Product::find($item['product_id']);
-            return [
-                'order_id'=> $order->id,
-                'product_id'=> $product->id,
-                'quantity'=> $item['quantity'],
-                'unit_price'=> $product->unit_price
-            ];
-        });
-        $order->order_items()->insert($items->toArray());
-
-        return new OrderResource($order);
+        return $this->order_service->store($request);
     }
 
     public function show($id)
     {
-        $order = Order::with(['order_items'])->where('id', $id)->first();
-        return new OrderResource($order);
+        return $this->order_service->show($id);
     }
 
     public function update(UpdateOrderRequest $request, Order $order)
     {
-        $new_item_prices = collect($request->items)->map(function ($single_item) {
-            $product = Product::find($single_item['product_id']);
-            return ['price'=>$product->unit_price*$single_item['quantity']];
-        });
-        $new_item_prices_total_amount = $new_item_prices->sum('price');
-        $old_item_prices = collect($request->order_items)->map(function ($single_item) {
-            $product = Product::find($single_item['product_id']);
-            return ['price'=>$product->unit_price*$single_item['quantity']];
-        });
-        $old_item_prices_total_amount = $old_item_prices->sum('price');
-
-        $items = collect($request->items)->map(function ($item) use($order){
-            $product = Product::find($item['product_id']);
-            return [
-                'order_id'=> $order->id,
-                'product_id'=> $product->id,
-                'quantity'=> $item['quantity'],
-                'unit_price'=> $product->unit_price
-            ];
-        });
-        $order->order_items()->insert($items->toArray());
-
-        foreach($request->order_items as $order_item)
-        {
-            $item = OrderItem::where('id', $order_item['id'])->first();
-            $item->update([
-                'product_id' => $order_item['product_id'],
-                'quantity' => $order_item['quantity'],
-            ]);
-        }
-
-        $order->update([
-            'order_date' => $request->order_date,
-            'customer_id' => $request->customer_id,
-            'total_amount' => $new_item_prices_total_amount + $old_item_prices_total_amount
-        ]);
-
-        return new OrderResource($order);
+        return $this->order_service->update($request, $order);
     }
 
     public function destroy(Order $order)
     {
-        $order->delete();
-
-        return response()->noContent();
+        return $this->order_service->destroy($order);
     }
 }

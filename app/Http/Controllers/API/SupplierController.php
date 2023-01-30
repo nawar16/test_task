@@ -8,37 +8,38 @@ use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
+use App\Services\SupplierService;
 
 class SupplierController extends Controller
 {
+    protected $supplier_service;
+    
+    public function __construct(SupplierService $supplier_service)
+    {
+        $this->supplier_service = $supplier_service;
+    }
     public function index()
     {
-        return SupplierResource::collection(Supplier::all());
+        return $this->supplier_service->index();
     }
 
     public function store(StoreSupplierRequest $request)
     {
-        $supplier = Supplier::create($request->validated());
-
-        return new SupplierResource($supplier);
+        return $this->supplier_service->store($request);
     }
 
     public function show(Supplier $supplier)
     {
-        return new SupplierResource($supplier);
+        return $this->supplier_service->show($supplier);
     }
 
     public function update(UpdateSupplierRequest $request, Supplier $supplier)
     {
-        $supplier->update($request->validated());
-
-        return new SupplierResource($supplier);
+        return $this->supplier_service->update($request, $supplier);
     }
 
     public function destroy(Supplier $supplier)
     {
-        $supplier->delete();
-
-        return response()->noContent();
+        return $this->supplier_service->destroy($supplier);
     }
 }

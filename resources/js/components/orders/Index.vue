@@ -4,7 +4,7 @@
 
     <div class="flex place-content-end mb-4">
         <div class="px-4 py-2 text-white bg-blue-700 hover:bg-indigo-800 rounded-lg cursor-pointer">
-            <router-link :to="{ name: 'orders.create' }" class="text-sm font-medium">Create order</router-link>
+            <router-link :to="{ name: 'orders.create' }" class="text-sm font-medium"><i class="fa fa-add"></i> Add</router-link>
         </div>
     </div>
 
@@ -29,8 +29,8 @@
        <Column field="total_amount" header="Total amount" :sortable="true"></Column>
        <Column header="actions">
             <template #body="slotProps">
-                <router-link :to="{ name: 'orders.edit', params: { id: slotProps.data.id } }" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-4">Edit</router-link>
-                <button @click="deleteOrder(slotProps.data.id)" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">Delete</button>
+                <router-link :to="{ name: 'orders.edit', params: { id: slotProps.data.id } }" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-4"><i class="fa fa-edit"></i></router-link>
+                <button @click="deleteOrder(slotProps.data.id)" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150"><i class="fa fa-trash"></i></button>
             </template>
        </Column>
     </DataTable>

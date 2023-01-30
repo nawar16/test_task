@@ -1,10 +1,17 @@
 
-## Packages
+## Tech Stack
+    Laravel 8
+    VueJs 3
+    Tailwind CSS
 
+## Packages
+    Laravel/breeze
+    Vue-loader
+    Vue-router
 
 ## Credentials
-    email: me@test.com
-    password: me123
+    Email: me@test.com
+    Password: me123
 
 
 

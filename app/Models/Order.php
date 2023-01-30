@@ -32,4 +32,9 @@ class Order extends Model
     public function order_items(){
         return $this->hasMany(OrderItem::class);
     }
+    public function getOrderDateAttribute($order_date)
+    {
+        return $this->attributes['order_date'] = \Carbon\Carbon::parse($order_date)->format('Y-m-d');
+    }
 }
+
